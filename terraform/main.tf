@@ -18,6 +18,14 @@ resource "aws_lambda_function" "lambda" {
       EVENT_SOURCE = local.event_source
     }
   }
+
+  dynamic dead_letter_config {
+    for_each = var.sns_topic_to_notify_on_failure != null ? [var.sns_topic_to_notify_on_failure] : []
+    iterator = sns_topic_arn
+    content {
+      target_arn = sns_topic_arn.value
+    }
+  }
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
@@ -55,6 +63,22 @@ resource "aws_iam_role_policy" "allow_put_events" {
         Effect   = "Allow",
         Action   = "events:PutEvents"
         Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "allow_sns_topic_notification" {
+  count = var.sns_topic_to_notify_on_failure != null ? 1 : 0
+  role  = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "sns:Publish"
+        Resource = var.sns_topic_to_notify_on_failure
       }
     ]
   })

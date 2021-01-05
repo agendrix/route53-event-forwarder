@@ -4,11 +4,11 @@ import AWS from "aws-sdk";
 const handler: Handler = async (event) => {
   const eventBridge = new AWS.EventBridge(({region: process.env.REGION}));
   const params = { Entries: [ formatEvent(event) ]};
-  try {
-    const response = await eventBridge.putEvents(params).promise();
+  const response = await eventBridge.putEvents(params).promise();
+  if (response.FailedEntryCount === 0) {
     console.log(`Event ${event.id} successfully forwarded to region ${process.env.REGION}. New event id: ${response.Entries?.shift()?.EventId}`);
-  } catch (e) {
-    console.log(e);
+  } else {
+    throw new Error(`An error occurred while forwarding event ${event.id}. Error code: ${response.Entries?.shift()?.ErrorCode}, Error message: ${response.Entries?.shift()?.ErrorMessage}`)
   }
 };
 
