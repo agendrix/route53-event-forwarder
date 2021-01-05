@@ -1,6 +1,6 @@
 {
   "name": "terraform-aws-lambda",
-  "version": "0.2.0",
+  "version": "v1.0.0",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:watch": "yarn test --watch --watch-extensions ts",
