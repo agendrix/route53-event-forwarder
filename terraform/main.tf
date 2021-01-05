@@ -1,6 +1,5 @@
 locals {
-  lambda_zip   = "${path.module}/lambda.zip"
-  event_source = "agendrix.route53-event-forwarder"
+  lambda_zip = "${path.module}/lambda.zip"
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -15,7 +14,7 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = {
       REGION       = var.region
-      EVENT_SOURCE = local.event_source
+      EVENT_SOURCE = var.event_source
     }
   }
 

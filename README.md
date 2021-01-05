@@ -21,8 +21,10 @@ Add the module to your [Terraform](https://www.terraform.io/) project:
 
 ```terraform
 module "terraform_aws_lambda" {
-  source      = "git@github.com:agendrix/route53-event-forwarder.git//terraform?ref=v0.2.0"
-  region      = "ca-central-1"
+  source       = "git@github.com:agendrix/route53-event-forwarder.git//terraform?ref=v0.2.0"
+
+  region       = "ca-central-1"
+  event_source = "agendrix.route53-event-forwarder"
 
   providers = {
     aws = aws.us-east-1
