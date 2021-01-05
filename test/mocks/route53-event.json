@@ -1,0 +1,57 @@
+{
+  "version": "0",
+  "id": "96fe2d00-c422-7602-76e5-58229433b15d",
+  "detail-type": "AWS API Call via CloudTrail",
+  "source": "aws.route53",
+  "time": "2021-01-04T18:44:13Z",
+  "region": "us-east-1",
+  "resources": [],
+  "detail": {
+    "eventVersion": "1.08",
+    "eventTime": "2021-01-04T18:44:13Z",
+    "eventSource": "route53.amazonaws.com",
+    "eventName": "ChangeResourceRecordSets",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "ecs.amazonaws.com",
+    "userAgent": "ecs.amazonaws.com",
+    "requestParameters": {
+        "hostedZoneId": "HOSTED_ZONE",
+        "changeBatch": {
+          "changes": [
+            {
+              "action": "DELETE",
+              "resourceRecordSet": {
+                "name": "service-name.cluster.service.",
+                "type": "A",
+                "weight": 1,
+                "tTL": 0,
+                "resourceRecords": [
+                  {
+                    "value": "10.0.2.29"
+                  }
+                ]
+              } 
+            }
+          ]
+        },
+      "dryRun": false
+    },
+    "responseElements": {
+      "changeInfo": {
+        "id": "/change/C05766751H1NI9HOW11TD",
+        "status": "PENDING",
+        "submittedAt": "Jan 4, 2021 6:44:13 PM"
+      }
+    },
+    "additionalEventData": {
+      "Note": "Do not use to reconstruct hosted zone"
+    },
+    "requestID": "ed6687e4-2111-46de-bbe5-aaf1442e9535",
+    "eventID": "3609a414-9914-44f6-99c3-de09565e987e",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "apiVersion": "2015-01-01",
+    "managementEvent": true,
+    "eventCategory": "Management"
+  }
+}

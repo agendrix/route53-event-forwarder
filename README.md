@@ -1,8 +1,19 @@
-# Terraform AWS Lambda
+# Route53 event forwarder
 
-_Template repository for creating a TypeScript AWS lambda function with Terraform_
+_An AWS Lambda for forwarding Route53 EventBridge events across regions_
 
-![Release](https://github.com/agendrix/terraform-aws-lambda/workflows/Release/badge.svg) ![Tests](https://github.com/agendrix/terraform-aws-lambda/workflows/Tests/badge.svg?branch=main)
+![Release](https://github.com/agendrix/route53-event-forwarder/workflows/Release/badge.svg) ![Tests](https://github.com/agendrix/route53-event-forwarder/workflows/Tests/badge.svg?branch=main)
+
+## Description
+
+Route53 events are [global](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-global-service-events), which means that they are logged in the `us-east-1` region regardless of where the action took place. Another important point to note is that an EventBridge target must always be in the same region as the EventBridge rule. By default, we can then only log Route53 events in CloudWatch log groups residing in the `us-east-1` region. This can sometime be problematic if your log groups are residing in another region. This lambda function solves this problem by forwarding the Route53 events to the region of your choice.
+
+## Prerequisites
+
+- Route53 events are caught by [EventBridge](https://aws.amazon.com/eventbridge/) via [Cloudtrail](https://aws.amazon.com/cloudtrail/).
+  Therefore, a global and multi-region trail must be set up in your account in order to use this lambda function. Please refer to the [events_trail](https://github.com/agendrix/terraform/tree/master/modules/events_trail) module for instanciation.
+
+- Since Route53 events are taking place in the `us-east-1` region, the lambda function must also reside in this region. A Terraform Aws provider configured for the `us-east-1` region must be [passed to the module](https://www.terraform.io/docs/configuration/meta-arguments/module-providers.html).
 
 ## How to use with Terraform
 
@@ -10,26 +21,11 @@ Add the module to your [Terraform](https://www.terraform.io/) project:
 
 ```terraform
 module "terraform_aws_lambda" {
-  source      = "git@github.com:agendrix/terraform-aws-lambda.git//terraform?ref=v0.2.0"
-  lambda_name = "my-typescript-lambda"
-  role_arn    = aws_iam_role.iam_for_lambda.role_arn
+  source      = "git@github.com:agendrix/route53-event-forwarder.git//terraform?ref=v0.2.0"
+  region      = "ca-central-1"
+
+  providers = {
+    aws = aws.us-east-1
+  }
 }
 ```
-
-See [Resource: aws_lambda_function](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function) for more information about the required `aws_iam_role`.
-
-In order to be able to receive http requests to the lambda, you will need to hook it up with an AWS API Gateway.
-You can do so by following this guide: [Serverless Applications with AWS Lambda and API Gateway](https://learn.hashicorp.com/tutorials/terraform/lambda-api-gateway).
-
-After applying the terraform plan, a dummy lambda will be available in the [AWS Lambda Console](https://console.aws.amazon.com/lambda/).
-
-## Deploying a new version of the lambda
-
-- Make sure you have all the required [GitHub Actions secrets](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets) for [`.github/workflows/release.yml`](.github/workflows/release.yml) to work.
-- Follow [CONTRIBUTING.md / Publish a new release](./CONTRIBUTING.md#publish-a-new-release) for deploying a new release.
-
----
-
-Your AWS lambda should now be available at https://console.aws.amazon.com/lambda/.
-
-Logs from the lambda will be available in AWS CloudWatch `/aws/lambda/${yourLambdaName}` log group.
