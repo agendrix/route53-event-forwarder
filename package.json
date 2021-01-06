@@ -1,5 +1,5 @@
 {
-  "name": "terraform-aws-lambda",
+  "name": "route53-event-forwarder",
   "version": "v1.0.2",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
