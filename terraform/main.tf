@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_lambda_function" "lambda" {
-  function_name    = "route53-event-forwarder-${data.aws_region.current.name}"
+  function_name    = "route53-event-forwarder"
   filename         = local.lambda_zip
   source_code_hash = filebase64sha256(local.lambda_zip)
   handler          = "index.handler"
@@ -18,7 +18,7 @@ resource "aws_lambda_function" "lambda" {
     }
   }
 
-  dynamic "dead_letter_config" {
+  dynamic dead_letter_config {
     for_each = var.sns_topic_to_notify_on_failure != null ? [var.sns_topic_to_notify_on_failure] : []
     iterator = sns_topic_arn
     content {
